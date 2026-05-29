@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>{{ post.title }}</h2>
+
+<p>{{ post.content }}</p>
+
+<p>
+    Author: {{ post.author.username }}
+</p>
+
+<hr>
+
+<h3>Comments</h3>
+
+{% for comment in comments %}
+
+<div>
+
+    <strong>
+        {{ comment.user.username }}
+    </strong>
+
+    <p>{{ comment.text }}</p>
+
+</div>
+
+<hr>
+
+{% endfor %}
+
+{% if user.is_authenticated %}
+
+<h3>Add Comment</h3>
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Comment
+    </button>
+
+</form>
+
+{% else %}
+
+<p>
+    Login to comment
+</p>
+
+{% endif %}
+
+{% endblock %}

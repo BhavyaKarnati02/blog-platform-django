@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>All Blog Posts</h2>
+
+{% for post in posts %}
+
+<div>
+
+    <h3>{{ post.title }}</h3>
+
+    <p>
+        {{ post.content|truncatewords:20 }}
+    </p>
+
+    <p>
+        By {{ post.author.username }}
+    </p>
+
+    <a href="{% url 'post_detail' post.id %}">
+        Read More
+    </a>
+
+</div>
+
+<hr>
+
+{% endfor %}
+
+{% endblock %}
