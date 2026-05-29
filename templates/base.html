@@ -20,12 +20,12 @@
 
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
     <div class="container">
 
-        <a class="navbar-brand fw-bold" href="/">
-            BlogPlatform
+        <a class="navbar-brand" href="/">
+            Blog Platform
         </a>
 
         <div>
@@ -33,25 +33,32 @@
             {% if user.is_authenticated %}
 
                 <span class="text-white me-3">
-                    Hi, {{ user.username }}
+
+                    Welcome {{ user.username }}
+
                 </span>
 
-                <a class="btn btn-success btn-sm" href="{% url 'create_post' %}">
-                    + Post
+                <a
+                    href="{% url 'create_post' %}"
+                    class="btn btn-success btn-sm"
+                >
+                    Create Post
                 </a>
 
-                <a class="btn btn-danger btn-sm" href="{% url 'logout' %}">
+                <a
+                    href="{% url 'logout' %}"
+                    class="btn btn-danger btn-sm"
+                >
                     Logout
                 </a>
 
             {% else %}
 
-                <a class="btn btn-primary btn-sm" href="{% url 'login' %}">
+                <a
+                    href="{% url 'login' %}"
+                    class="btn btn-primary btn-sm"
+                >
                     Login
-                </a>
-
-                <a class="btn btn-outline-light btn-sm" href="{% url 'signup' %}">
-                    Sign Up
                 </a>
 
             {% endif %}
