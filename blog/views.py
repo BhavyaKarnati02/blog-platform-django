@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 from .models import Post, Comment
-
 from .forms import PostForm, CommentForm
 
 
@@ -9,9 +9,12 @@ def home(request):
 
     posts = Post.objects.all().order_by('-created_at')
 
-    return render(request, 'home.html', {'posts': posts})
+    return render(request, 'home.html', {
+        'posts': posts
+    })
 
 
+@login_required
 def create_post(request):
 
     if request.method == 'POST':
@@ -32,39 +35,84 @@ def create_post(request):
 
         form = PostForm()
 
-    return render(request, 'create_post.html', {'form': form})
+    return render(request, 'create_post.html', {
+        'form': form
+    })
 
 
 def post_detail(request, post_id):
 
     post = get_object_or_404(Post, id=post_id)
 
-    comments = Comment.objects.filter(post=post)
+    comments = post.comment_set.all()
 
     if request.method == 'POST':
 
-        form = CommentForm(request.POST)
+        if request.user.is_authenticated:
 
-        if form.is_valid():
+            form = CommentForm(request.POST)
 
-            comment = form.save(commit=False)
+            if form.is_valid():
 
-            comment.post = post
+                comment = form.save(commit=False)
 
-            comment.user = request.user
+                comment.post = post
 
-            comment.save()
+                comment.user = request.user
 
-            return redirect('post_detail', post_id=post.id)
+                comment.save()
+
+                return redirect('post_detail', post_id=post.id)
 
     else:
 
         form = CommentForm()
 
-    context = {
+    return render(request, 'post_detail.html', {
         'post': post,
         'comments': comments,
-        'form': form,
-    }
+        'form': form
+    })
 
-    return render(request, 'post_detail.html', context)
+
+@login_required
+def edit_post(request, post_id):
+
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.user != post.author:
+        return redirect('home')
+
+    if request.method == 'POST':
+
+        form = PostForm(
+            request.POST,
+            request.FILES,
+            instance=post
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect('post_detail', post_id=post.id)
+
+    else:
+
+        form = PostForm(instance=post)
+
+    return render(request, 'edit_post.html', {
+        'form': form
+    })
+
+
+@login_required
+def delete_post(request, post_id):
+
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.user == post.author:
+
+        post.delete()
+
+    return redirect('home')
