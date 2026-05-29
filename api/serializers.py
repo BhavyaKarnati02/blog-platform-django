@@ -1,16 +1,32 @@
 from rest_framework import serializers
-from blog.models import Post, Comment
+
+from blog.models import Post
 
 
 class PostSerializer(serializers.ModelSerializer):
 
+    author = serializers.CharField(
+        source='author.username',
+        read_only=True
+    )
+
+    likes = serializers.SerializerMethodField(
+        read_only=True
+    )
+
     class Meta:
+
         model = Post
-        fields = '__all__'
 
+        fields = [
+            'id',
+            'title',
+            'content',
+            'author',
+            'likes',
+            'created_at',
+        ]
 
-class CommentSerializer(serializers.ModelSerializer):
+    def get_likes(self, obj):
 
-    class Meta:
-        model = Comment
-        fields = '__all__'
+        return obj.likes.count()
